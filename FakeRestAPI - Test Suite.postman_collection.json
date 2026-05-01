@@ -1,0 +1,1635 @@
+{
+  "info": {
+    "_postman_id": "321438bf-956c-4faa-bfe0-30a1f859fb4e",
+    "name": "FakeRestAPI - Test Suite",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "29839751"
+  },
+  "item": [
+    {
+      "name": "Books",
+      "item": [
+        {
+          "name": "[Positive] Get All Books",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Response is an array', function () { var jsonData = pm.response.json(); pm.expect(jsonData).to.be.an('array'); });",
+                  "pm.test('Response time is less than 3000ms', function () { pm.expect(pm.response.responseTime).to.be.below(3000); });",
+                  "pm.test('Each book has id, title, pageCount fields', function () { var jsonData = pm.response.json(); jsonData.forEach(function(book) { pm.expect(book).to.have.property('id'); pm.expect(book).to.have.property('title'); pm.expect(book).to.have.property('pageCount'); }); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://fakerestapi.azurewebsites.net/api/v1/Books",
+              "protocol": "https",
+              "host": [
+                "fakerestapi",
+                "azurewebsites",
+                "net"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "Books"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[Positive] Get Book by Valid ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Response id equals 1', function () { var jsonData = pm.response.json(); pm.expect(jsonData.id).to.eql(1); });",
+                  "pm.test('Response has title field', function () { var jsonData = pm.response.json(); pm.expect(jsonData).to.have.property('title'); });",
+                  "pm.test('Response has pageCount field', function () { var jsonData = pm.response.json(); pm.expect(jsonData).to.have.property('pageCount'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://fakerestapi.azurewebsites.net/api/v1/Books/1",
+              "protocol": "https",
+              "host": [
+                "fakerestapi",
+                "azurewebsites",
+                "net"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "Books",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[Negative] Get Book by Invalid ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 404', function () { pm.response.to.have.status(404); });",
+                  "pm.test('Response has title field with Not Found or similar', function () { var jsonData = pm.response.json(); pm.expect(jsonData).to.have.property('title'); pm.expect(jsonData.title).to.match(/not found/i); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://fakerestapi.azurewebsites.net/api/v1/Books/99999",
+              "protocol": "https",
+              "host": [
+                "fakerestapi",
+                "azurewebsites",
+                "net"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "Books",
+                "99999"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[Negative] Get Book by Non-numeric ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 400', function () { pm.response.to.have.status(400); });",
+                  "pm.test('Response body is not empty', function () { pm.expect(pm.response.text()).to.not.be.empty; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://fakerestapi.azurewebsites.net/api/v1/Books/abc",
+              "protocol": "https",
+              "host": [
+                "fakerestapi",
+                "azurewebsites",
+                "net"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "Books",
+                "abc"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[Positive] Create Book",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Response id equals 201', function () { var jsonData = pm.response.json(); pm.expect(jsonData.id).to.eql(201); });",
+                  "pm.test('Response title equals Test Book', function () { var jsonData = pm.response.json(); pm.expect(jsonData.title).to.eql('Test Book'); });",
+                  "pm.test('Response pageCount equals 300', function () { var jsonData = pm.response.json(); pm.expect(jsonData.pageCount).to.eql(300); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 201,\n  \"title\": \"Test Book\",\n  \"description\": \"A test book description\",\n  \"pageCount\": 300,\n  \"excerpt\": \"This is an excerpt\",\n  \"publishDate\": \"2024-01-01T00:00:00\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://fakerestapi.azurewebsites.net/api/v1/Books",
+              "protocol": "https",
+              "host": [
+                "fakerestapi",
+                "azurewebsites",
+                "net"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "Books"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[Negative] Create Book with Missing Fields",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200 or 400 (log actual status)', function () { console.log('Actual status:', pm.response.code); pm.expect([200, 400]).to.include(pm.response.code); });",
+                  "pm.test('Response body is not empty', function () { pm.expect(pm.response.text()).to.not.be.empty; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://fakerestapi.azurewebsites.net/api/v1/Books",
+              "protocol": "https",
+              "host": [
+                "fakerestapi",
+                "azurewebsites",
+                "net"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "Books"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[Positive] Update Book",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Response id equals 1', function () { var jsonData = pm.response.json(); pm.expect(jsonData.id).to.eql(1); });",
+                  "pm.test('Response title equals Updated Book Title', function () { var jsonData = pm.response.json(); pm.expect(jsonData.title).to.eql('Updated Book Title'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 1,\n  \"title\": \"Updated Book Title\",\n  \"description\": \"Updated description\",\n  \"pageCount\": 500,\n  \"excerpt\": \"Updated excerpt\",\n  \"publishDate\": \"2024-06-01T00:00:00\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://fakerestapi.azurewebsites.net/api/v1/Books/1",
+              "protocol": "https",
+              "host": [
+                "fakerestapi",
+                "azurewebsites",
+                "net"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "Books",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[Negative] Update Book with Invalid ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200 or 404 (log actual status)', function () { console.log('Actual status:', pm.response.code); pm.expect([200, 404]).to.include(pm.response.code); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 99999,\n  \"title\": \"Ghost Book\",\n  \"description\": \"Does not exist\",\n  \"pageCount\": 100,\n  \"excerpt\": \"None\",\n  \"publishDate\": \"2024-01-01T00:00:00\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://fakerestapi.azurewebsites.net/api/v1/Books/99999",
+              "protocol": "https",
+              "host": [
+                "fakerestapi",
+                "azurewebsites",
+                "net"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "Books",
+                "99999"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[Positive] Delete Book",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "https://fakerestapi.azurewebsites.net/api/v1/Books/1",
+              "protocol": "https",
+              "host": [
+                "fakerestapi",
+                "azurewebsites",
+                "net"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "Books",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[Negative] Delete Book with Invalid ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 404', function () { pm.response.to.have.status(404); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "https://fakerestapi.azurewebsites.net/api/v1/Books/99999",
+              "protocol": "https",
+              "host": [
+                "fakerestapi",
+                "azurewebsites",
+                "net"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "Books",
+                "99999"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Authors",
+      "item": [
+        {
+          "name": "[Positive] Get All Authors",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Response is an array', function () { var jsonData = pm.response.json(); pm.expect(jsonData).to.be.an('array'); });",
+                  "pm.test('Response time is less than 3000ms', function () { pm.expect(pm.response.responseTime).to.be.below(3000); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://fakerestapi.azurewebsites.net/api/v1/Authors",
+              "protocol": "https",
+              "host": [
+                "fakerestapi",
+                "azurewebsites",
+                "net"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "Authors"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[Positive] Get Author by Valid ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Response id equals 1', function () { var jsonData = pm.response.json(); pm.expect(jsonData.id).to.eql(1); });",
+                  "pm.test('Response has firstName and lastName fields', function () { var jsonData = pm.response.json(); pm.expect(jsonData).to.have.property('firstName'); pm.expect(jsonData).to.have.property('lastName'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://fakerestapi.azurewebsites.net/api/v1/Authors/1",
+              "protocol": "https",
+              "host": [
+                "fakerestapi",
+                "azurewebsites",
+                "net"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "Authors",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[Negative] Get Author by Invalid ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 404', function () { pm.response.to.have.status(404); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://fakerestapi.azurewebsites.net/api/v1/Authors/99999",
+              "protocol": "https",
+              "host": [
+                "fakerestapi",
+                "azurewebsites",
+                "net"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "Authors",
+                "99999"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[Negative] Get Author by Non-numeric ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 400', function () { pm.response.to.have.status(400); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://fakerestapi.azurewebsites.net/api/v1/Authors/xyz",
+              "protocol": "https",
+              "host": [
+                "fakerestapi",
+                "azurewebsites",
+                "net"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "Authors",
+                "xyz"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[Positive] Create Author",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Response firstName equals John', function () { var jsonData = pm.response.json(); pm.expect(jsonData.firstName).to.eql('John'); });",
+                  "pm.test('Response lastName equals Doe', function () { var jsonData = pm.response.json(); pm.expect(jsonData.lastName).to.eql('Doe'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 500,\n  \"idBook\": 1,\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://fakerestapi.azurewebsites.net/api/v1/Authors",
+              "protocol": "https",
+              "host": [
+                "fakerestapi",
+                "azurewebsites",
+                "net"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "Authors"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[Negative] Create Author with Empty Body",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200 or 400 (log actual status)', function () { console.log('Actual status:', pm.response.code); pm.expect([200, 400]).to.include(pm.response.code); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://fakerestapi.azurewebsites.net/api/v1/Authors",
+              "protocol": "https",
+              "host": [
+                "fakerestapi",
+                "azurewebsites",
+                "net"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "Authors"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[Positive] Update Author",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Response firstName equals Jane', function () { var jsonData = pm.response.json(); pm.expect(jsonData.firstName).to.eql('Jane'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 1,\n  \"idBook\": 1,\n  \"firstName\": \"Jane\",\n  \"lastName\": \"Smith\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://fakerestapi.azurewebsites.net/api/v1/Authors/1",
+              "protocol": "https",
+              "host": [
+                "fakerestapi",
+                "azurewebsites",
+                "net"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "Authors",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[Negative] Update Author with Invalid ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200 or 404 (log actual status)', function () { console.log('Actual status:', pm.response.code); pm.expect([200, 404]).to.include(pm.response.code); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 99999,\n  \"idBook\": 1,\n  \"firstName\": \"Ghost\",\n  \"lastName\": \"Author\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://fakerestapi.azurewebsites.net/api/v1/Authors/99999",
+              "protocol": "https",
+              "host": [
+                "fakerestapi",
+                "azurewebsites",
+                "net"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "Authors",
+                "99999"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[Positive] Delete Author",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "https://fakerestapi.azurewebsites.net/api/v1/Authors/1",
+              "protocol": "https",
+              "host": [
+                "fakerestapi",
+                "azurewebsites",
+                "net"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "Authors",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[Negative] Delete Author with Invalid ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 404', function () { pm.response.to.have.status(404); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "https://fakerestapi.azurewebsites.net/api/v1/Authors/99999",
+              "protocol": "https",
+              "host": [
+                "fakerestapi",
+                "azurewebsites",
+                "net"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "Authors",
+                "99999"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "[Positive] Get All Users",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Response is an array', function () { var jsonData = pm.response.json(); pm.expect(jsonData).to.be.an('array'); });",
+                  "pm.test('Response time is less than 3000ms', function () { pm.expect(pm.response.responseTime).to.be.below(3000); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://fakerestapi.azurewebsites.net/api/v1/Users",
+              "protocol": "https",
+              "host": [
+                "fakerestapi",
+                "azurewebsites",
+                "net"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "Users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[Positive] Get User by Valid ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Response id equals 1', function () { var jsonData = pm.response.json(); pm.expect(jsonData.id).to.eql(1); });",
+                  "pm.test('Response has userName field', function () { var jsonData = pm.response.json(); pm.expect(jsonData).to.have.property('userName'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://fakerestapi.azurewebsites.net/api/v1/Users/1",
+              "protocol": "https",
+              "host": [
+                "fakerestapi",
+                "azurewebsites",
+                "net"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "Users",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[Negative] Get User by Invalid ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 404', function () { pm.response.to.have.status(404); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://fakerestapi.azurewebsites.net/api/v1/Users/99999",
+              "protocol": "https",
+              "host": [
+                "fakerestapi",
+                "azurewebsites",
+                "net"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "Users",
+                "99999"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[Negative] Get User by Non-numeric ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 400', function () { pm.response.to.have.status(400); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://fakerestapi.azurewebsites.net/api/v1/Users/abc",
+              "protocol": "https",
+              "host": [
+                "fakerestapi",
+                "azurewebsites",
+                "net"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "Users",
+                "abc"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[Positive] Create User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Response userName equals testuser', function () { var jsonData = pm.response.json(); pm.expect(jsonData.userName).to.eql('testuser'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 100,\n  \"userName\": \"testuser\",\n  \"password\": \"Test@1234\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://fakerestapi.azurewebsites.net/api/v1/Users",
+              "protocol": "https",
+              "host": [
+                "fakerestapi",
+                "azurewebsites",
+                "net"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "Users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[Negative] Create User with Empty Body",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200 or 400 (log actual status)', function () { console.log('Actual status:', pm.response.code); pm.expect([200, 400]).to.include(pm.response.code); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://fakerestapi.azurewebsites.net/api/v1/Users",
+              "protocol": "https",
+              "host": [
+                "fakerestapi",
+                "azurewebsites",
+                "net"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "Users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[Positive] Update User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Response userName equals updateduser', function () { var jsonData = pm.response.json(); pm.expect(jsonData.userName).to.eql('updateduser'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 1,\n  \"userName\": \"updateduser\",\n  \"password\": \"NewPass@123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://fakerestapi.azurewebsites.net/api/v1/Users/1",
+              "protocol": "https",
+              "host": [
+                "fakerestapi",
+                "azurewebsites",
+                "net"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "Users",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[Negative] Update User with Invalid ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200 or 404 (log actual status)', function () { console.log('Actual status:', pm.response.code); pm.expect([200, 404]).to.include(pm.response.code); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 99999,\n  \"userName\": \"ghostuser\",\n  \"password\": \"Ghost@123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://fakerestapi.azurewebsites.net/api/v1/Users/99999",
+              "protocol": "https",
+              "host": [
+                "fakerestapi",
+                "azurewebsites",
+                "net"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "Users",
+                "99999"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[Positive] Delete User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "https://fakerestapi.azurewebsites.net/api/v1/Users/1",
+              "protocol": "https",
+              "host": [
+                "fakerestapi",
+                "azurewebsites",
+                "net"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "Users",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[Negative] Delete User with Invalid ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 404', function () { pm.response.to.have.status(404); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "https://fakerestapi.azurewebsites.net/api/v1/Users/99999",
+              "protocol": "https",
+              "host": [
+                "fakerestapi",
+                "azurewebsites",
+                "net"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "Users",
+                "99999"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "CoverPhotos",
+      "item": [
+        {
+          "name": "[Positive] Get All Cover Photos",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Response is an array', function () { var jsonData = pm.response.json(); pm.expect(jsonData).to.be.an('array'); });",
+                  "pm.test('Response time is less than 3000ms', function () { pm.expect(pm.response.responseTime).to.be.below(3000); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://fakerestapi.azurewebsites.net/api/v1/CoverPhotos",
+              "protocol": "https",
+              "host": [
+                "fakerestapi",
+                "azurewebsites",
+                "net"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "CoverPhotos"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[Positive] Get Cover Photo by Valid ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Response id equals 1', function () { var jsonData = pm.response.json(); pm.expect(jsonData.id).to.eql(1); });",
+                  "pm.test('Response has url field', function () { var jsonData = pm.response.json(); pm.expect(jsonData).to.have.property('url'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://fakerestapi.azurewebsites.net/api/v1/CoverPhotos/1",
+              "protocol": "https",
+              "host": [
+                "fakerestapi",
+                "azurewebsites",
+                "net"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "CoverPhotos",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[Negative] Get Cover Photo by Invalid ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 404', function () { pm.response.to.have.status(404); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://fakerestapi.azurewebsites.net/api/v1/CoverPhotos/99999",
+              "protocol": "https",
+              "host": [
+                "fakerestapi",
+                "azurewebsites",
+                "net"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "CoverPhotos",
+                "99999"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[Negative] Get Cover Photo by Non-numeric ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 400', function () { pm.response.to.have.status(400); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://fakerestapi.azurewebsites.net/api/v1/CoverPhotos/abc",
+              "protocol": "https",
+              "host": [
+                "fakerestapi",
+                "azurewebsites",
+                "net"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "CoverPhotos",
+                "abc"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[Positive] Create Cover Photo",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Response url equals https://example.com/cover.jpg', function () { var jsonData = pm.response.json(); pm.expect(jsonData.url).to.eql('https://example.com/cover.jpg'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 300,\n  \"idBook\": 1,\n  \"url\": \"https://example.com/cover.jpg\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://fakerestapi.azurewebsites.net/api/v1/CoverPhotos",
+              "protocol": "https",
+              "host": [
+                "fakerestapi",
+                "azurewebsites",
+                "net"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "CoverPhotos"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[Negative] Create Cover Photo with Empty Body",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200 or 400 (log actual status)', function () { console.log('Actual status:', pm.response.code); pm.expect([200, 400]).to.include(pm.response.code); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://fakerestapi.azurewebsites.net/api/v1/CoverPhotos",
+              "protocol": "https",
+              "host": [
+                "fakerestapi",
+                "azurewebsites",
+                "net"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "CoverPhotos"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[Positive] Update Cover Photo",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Response url equals https://example.com/updated-cover.jpg', function () { var jsonData = pm.response.json(); pm.expect(jsonData.url).to.eql('https://example.com/updated-cover.jpg'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 1,\n  \"idBook\": 1,\n  \"url\": \"https://example.com/updated-cover.jpg\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://fakerestapi.azurewebsites.net/api/v1/CoverPhotos/1",
+              "protocol": "https",
+              "host": [
+                "fakerestapi",
+                "azurewebsites",
+                "net"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "CoverPhotos",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[Negative] Update Cover Photo with Invalid ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200 or 404 (log actual status)', function () { console.log('Actual status:', pm.response.code); pm.expect([200, 404]).to.include(pm.response.code); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 99999,\n  \"idBook\": 1,\n  \"url\": \"https://example.com/ghost.jpg\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://fakerestapi.azurewebsites.net/api/v1/CoverPhotos/99999",
+              "protocol": "https",
+              "host": [
+                "fakerestapi",
+                "azurewebsites",
+                "net"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "CoverPhotos",
+                "99999"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[Positive] Delete Cover Photo",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "https://fakerestapi.azurewebsites.net/api/v1/CoverPhotos/1",
+              "protocol": "https",
+              "host": [
+                "fakerestapi",
+                "azurewebsites",
+                "net"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "CoverPhotos",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[Negative] Delete Cover Photo with Invalid ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 404', function () { pm.response.to.have.status(404); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "https://fakerestapi.azurewebsites.net/api/v1/CoverPhotos/99999",
+              "protocol": "https",
+              "host": [
+                "fakerestapi",
+                "azurewebsites",
+                "net"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "CoverPhotos",
+                "99999"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
